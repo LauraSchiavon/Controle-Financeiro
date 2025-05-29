@@ -1,37 +1,39 @@
-import { openDb } from "../../../../lib/db"; // Caminho para o banco
+// src/app/api/transacoes/route.ts
+import { openDb } from "../../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// GET – Retorna todas as transações com todos os campos
+// GET – listar transações
 export async function GET() {
   const db = await openDb();
-  const transacoes = await db.all(
-    "SELECT * FROM transacoes ORDER BY data DESC"
-  );
+  const transacoes = await db.all(`
+    SELECT 
+      t.*, 
+      c.banco 
+    FROM transacoes t
+    LEFT JOIN cartoes c ON t.cartao_id = c.id
+    ORDER BY t.data DESC
+  `);
+
   return NextResponse.json(transacoes);
 }
 
-// POST – Adiciona uma nova transação (agora completa)
+// POST – criar nova transação
 export async function POST(req: NextRequest) {
-  // Pegamos todos os campos do body, incluindo os novos
-  const { titulo, valor, tipo, data, forma_pagamento, categoria } =
+  const { titulo, valor, tipo, data, categoria, forma_pagamento, banco } =
     await req.json();
 
   const db = await openDb();
 
-  // Inserimos todos os campos na tabela
   await db.run(
-    `
-    INSERT INTO transacoes 
-      (titulo, valor, tipo, data, forma_pagamento, categoria)
-    VALUES 
-      (?, ?, ?, ?, ?, ?)
-  `,
+    `INSERT INTO transacoes (titulo, valor, tipo, data, categoria, forma_pagamento, banco)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     titulo,
     valor,
     tipo,
     data,
+    categoria,
     forma_pagamento,
-    categoria
+    banco
   );
 
   return NextResponse.json(

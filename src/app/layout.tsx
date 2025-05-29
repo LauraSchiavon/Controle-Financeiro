@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-// Importa os componentes que criamos
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+// Importa a fonte moderna Geist
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -18,30 +17,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Controle Financeiro",
-  description: "Aplicação para controle financeiro pessoal",
+  description: "Controle seus gastos com estilo",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      {/* Aplica as fontes importadas e suavização de texto */}
+    <html lang="pt-BR">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900 flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white`}
       >
-        {/* Navbar sempre no topo */}
-        <Navbar />
+        {/* Estrutura principal com layout em coluna vertical */}
+        <div className="flex flex-col min-h-screen">
+          {/* Cabeçalho fixo (nav) */}
+          <Navbar />
 
-        {/* Conteúdo principal, cresce para ocupar espaço disponível */}
-        <main className="flex-grow max-w-7xl mx-auto p-4 w-full">
-          {children}
-        </main>
+          {/* Conteúdo principal alinhado e centralizado via Grid */}
+          <main className="flex-grow py-8">{children}</main>
 
-        {/* Footer sempre no final da página */}
-        <Footer />
+          {/* Rodapé no final da página */}
+          <Footer />
+        </div>
       </body>
     </html>
   );

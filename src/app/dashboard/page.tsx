@@ -24,6 +24,7 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchTransacoes();
   }, []);
+
   // Função para deletar uma transação por ID
   const handleDelete = async (id: number) => {
     const confirm = window.confirm("Tem certeza que deseja excluir?");
@@ -35,6 +36,7 @@ export default function DashboardPage() {
 
     fetchTransacoes(); // Atualiza a lista após deletar
   };
+
   // Aplica os filtros à lista
   const transacoesFiltradas = transacoes.filter((t) => {
     return (
@@ -47,6 +49,7 @@ export default function DashboardPage() {
       (!filtros.data || t.data === filtros.data)
     );
   });
+
   // Calcula totais com base nas transações filtradas
   const totalEntradas = transacoesFiltradas
     .filter((t) => t.tipo === "entrada")
@@ -57,6 +60,7 @@ export default function DashboardPage() {
     .reduce((acc, t) => acc + t.valor, 0);
 
   const saldo = totalEntradas - totalSaidas;
+
   return (
     <Grid>
       <div className="mt-10">

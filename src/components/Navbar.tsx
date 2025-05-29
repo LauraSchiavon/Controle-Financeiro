@@ -1,31 +1,55 @@
 "use client";
 
 import React, { useState } from "react";
-import Grid from "./Grid";
 import Link from "next/link";
+import Grid from "./Grid";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
-  // Controla se o menu mobile está aberto (true) ou fechado (false)
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // controla menu mobile
 
   return (
-    // Nav com fundo cinza escuro e texto claro
-    <nav className="bg-gray-900 text-white">
+    <motion.nav
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white shadow-lg"
+    >
+      {/* Container centralizado */}
       <Grid>
-        {/* Linha principal com logo e botão hamburguer */}
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="text-2xl font-bold">Controle Financeiro</div>
+          <Link
+            href="/"
+            className="text-xl font-bold hover:opacity-90 transition"
+          >
+            Controle 💰
+          </Link>
 
-          {/* Botão hamburger só aparece em telas pequenas */}
+          {/* Menu desktop */}
+          <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
+            <Link href="/dashboard" className="hover:text-gray-300 transition">
+              Dashboard
+            </Link>
+            <Link href="/relatorios" className="hover:text-gray-300 transition">
+              Relatórios
+            </Link>
+            <Link
+              href="/informacoes"
+              className="hover:text-gray-300 transition"
+            >
+              Informações
+            </Link>
+          </div>
+
+          {/* Menu mobile botão hamburguer */}
           <button
             className="md:hidden"
-            onClick={() => setOpen(!open)} // Alterna estado open para abrir/fechar menu
-            aria-label="Toggle menu"
+            onClick={() => setOpen(!open)}
+            aria-label="Abrir menu"
           >
-            {/* Ícone muda dependendo se o menu está aberto ou fechado */}
             <svg
-              className="w-6 h-6 text-gray-300"
+              className="w-6 h-6 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -48,58 +72,32 @@ export default function Navbar() {
               )}
             </svg>
           </button>
+        </div>
 
-          {/* Menu para desktop: visível só em md+ */}
-          <div className="hidden md:flex space-x-6 text-gray-300 font-medium">
+        {/* Menu mobile aberto */}
+        {open && (
+          <div className="md:hidden mt-2 pb-4 space-y-2 text-sm font-medium text-gray-200">
             <Link
-              href="/"
-              className="hover:text-white transition-colors duration-200"
+              href="/dashboard"
+              className="block hover:text-white transition"
             >
-              Home
+              Dashboard
             </Link>
             <Link
-              href="/register"
-              className="hover:text-white transition-colors duration-200"
+              href="/relatorios"
+              className="block hover:text-white transition"
             >
-              Cadastro
+              Relatórios
             </Link>
             <Link
-              href="/login"
-              className="hover:text-white transition-colors duration-200"
+              href="/informacoes"
+              className="block hover:text-white transition"
             >
-              Login
+              Informações
             </Link>
           </div>
-        </div>
+        )}
       </Grid>
-
-      {/* Menu para mobile, aparece fora do Grid, ocupando toda a largura */}
-      {/* Assim o menu fica "embaixo" da barra e com fundo escuro completo */}
-      {open && (
-        <div className="md:hidden bg-gray-900 px-4 pb-4 space-y-3 text-gray-300 font-medium">
-          <Link
-            href="/"
-            className="block hover:text-white transition-colors duration-200"
-            onClick={() => setOpen(false)} // Fecha menu ao clicar no link
-          >
-            Home
-          </Link>
-          <Link
-            href="/register"
-            className="block hover:text-white transition-colors duration-200"
-            onClick={() => setOpen(false)}
-          >
-            Cadastro
-          </Link>
-          <Link
-            href="/login"
-            className="block hover:text-white transition-colors duration-200"
-            onClick={() => setOpen(false)}
-          >
-            Login
-          </Link>
-        </div>
-      )}
-    </nav>
+    </motion.nav>
   );
 }

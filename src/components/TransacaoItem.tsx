@@ -10,6 +10,7 @@ export interface Transacao {
   data: string;
   forma_pagamento: string;
   categoria: string;
+  banco: string;
 }
 // Componente que representa uma linha da tabela
 export default function TransacaoItem({ transacao }: { transacao: Transacao }) {
@@ -29,6 +30,7 @@ export default function TransacaoItem({ transacao }: { transacao: Transacao }) {
       <td className="px-4 py-2">{transacao.data}</td>
       <td className="px-4 py-2 capitalize">{transacao.forma_pagamento}</td>
       <td className="px-4 py-2 capitalize">{transacao.categoria}</td>
+      <td className="px-4 py-2 capitalize">{transacao.banco}</td>
     </tr>
   );
 }

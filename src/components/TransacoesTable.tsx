@@ -9,7 +9,7 @@ export default function TransacoesTable({
   onDelete?: (id: number) => void;
 }) {
   return (
-    <div className="overflow-x-auto bg-white rounded shadow">
+    <div className="overflow-x-auto bg-gray-700 rounded shadow">
       <table className="min-w-full">
         <thead>
           <tr className="bg-gray-100 text-left text-gray-700">
@@ -19,6 +19,7 @@ export default function TransacoesTable({
             <th className="px-4 py-2">Data</th>
             <th className="px-4 py-2">Forma</th>
             <th className="px-4 py-2">Categoria</th>
+            <th className="px-4 py-2">Cartão</th>
             {onDelete && <th className="px-4 py-2">Ações</th>}
           </tr>
         </thead>
@@ -39,6 +40,7 @@ export default function TransacoesTable({
               <td className="px-4 py-2">{t.data}</td>
               <td className="px-4 py-2 capitalize">{t.forma_pagamento}</td>
               <td className="px-4 py-2 capitalize">{t.categoria}</td>
+              <td className="px-4 py-2 capitalize">{t.banco}</td>
               {onDelete && (
                 <td className="px-4 py-2">
                   <button

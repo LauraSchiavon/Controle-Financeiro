@@ -2,34 +2,35 @@
 
 import React from "react";
 import Grid from "./Grid";
-import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Footer() {
   return (
-    // Rodapé com fundo preto e texto cinza claro
-    <footer className="bg-gray-900 text-gray-400 py-6">
-      {/* Grid para centralizar e limitar a largura do conteúdo */}
+    <motion.footer
+      initial={{ opacity: 0, y: 20 }} // animação de entrada
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-gray-900 text-gray-300 mt-20"
+    >
       <Grid>
-        {/* Flex container para colocar textos e links lado a lado em desktop e empilhados no mobile */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-sm">
-          {/* Texto do copyright */}
-          <p>© 2025 Controle Financeiro. Todos os direitos reservados.</p>
+        <div className="py-6 text-sm flex flex-col md:flex-row items-center justify-center gap-2">
+          {/* Texto da esquerda */}
+          <span className="text-center md:text-left">
+            © {new Date().getFullYear()} Controle Financeiro. Todos os direitos
+            reservados.
+          </span>
 
-          {/* Links adicionais do footer */}
-          {/* mt-2 no mobile para dar espaçamento em cima, removido no desktop */}
-          <div className="mt-2 md:mt-0">
-            <Link href="#" className="hover:text-white mx-2">
-              Privacidade
-            </Link>
-            <Link href="#" className="hover:text-white mx-2">
+          {/* Links rápidos (se quiser adicionar no futuro)
+          <div className="flex space-x-4">
+            <a href="#" className="hover:text-white transition">
               Termos
-            </Link>
-            <Link href="#" className="hover:text-white mx-2">
-              Contato
-            </Link>
-          </div>
+            </a>
+            <a href="#" className="hover:text-white transition">
+              Privacidade
+            </a>
+          </div> */}
         </div>
       </Grid>
-    </footer>
+    </motion.footer>
   );
 }
