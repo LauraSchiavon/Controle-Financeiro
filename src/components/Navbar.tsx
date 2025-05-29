@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Grid from "./Grid";
+import Link from "next/link";
 
 export default function Navbar() {
   // Controla se o menu mobile está aberto (true) ou fechado (false)
@@ -50,24 +51,24 @@ export default function Navbar() {
 
           {/* Menu para desktop: visível só em md+ */}
           <div className="hidden md:flex space-x-6 text-gray-300 font-medium">
-            <a
+            <Link
               href="/"
               className="hover:text-white transition-colors duration-200"
             >
               Home
-            </a>
-            <a
+            </Link>
+            <Link
               href="/register"
               className="hover:text-white transition-colors duration-200"
             >
               Cadastro
-            </a>
-            <a
+            </Link>
+            <Link
               href="/login"
               className="hover:text-white transition-colors duration-200"
             >
               Login
-            </a>
+            </Link>
           </div>
         </div>
       </Grid>
@@ -76,27 +77,27 @@ export default function Navbar() {
       {/* Assim o menu fica "embaixo" da barra e com fundo escuro completo */}
       {open && (
         <div className="md:hidden bg-gray-900 px-4 pb-4 space-y-3 text-gray-300 font-medium">
-          <a
+          <Link
             href="/"
             className="block hover:text-white transition-colors duration-200"
             onClick={() => setOpen(false)} // Fecha menu ao clicar no link
           >
             Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/register"
             className="block hover:text-white transition-colors duration-200"
             onClick={() => setOpen(false)}
           >
             Cadastro
-          </a>
-          <a
+          </Link>
+          <Link
             href="/login"
             className="block hover:text-white transition-colors duration-200"
             onClick={() => setOpen(false)}
           >
             Login
-          </a>
+          </Link>
         </div>
       )}
     </nav>

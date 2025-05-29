@@ -1,71 +1,54 @@
-"use client"; // Diz ao Next.js que essa página é cliente e pode usar estados e eventos
+// src/app/register/page.tsx
+"use client";
 
-import { useState } from "react"; // Importa o hook useState para controlar dados do formulário
+import React, { useState } from "react";
+import Grid from "@/components/Grid";
 
-// Componente da página de registro (cadastro)
 export default function RegisterPage() {
-  // Criamos estados para guardar os valores que o usuário digita
-  const [name, setName] = useState(""); // Estado para o nome
-  const [email, setEmail] = useState(""); // Estado para o email
-  const [password, setPassword] = useState(""); // Estado para a senha
+  // Estados para os inputs do formulário
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // Função chamada quando o formulário for enviado
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault(); // Evita que a página recarregue ao enviar o formulário
+  // Função para lidar com o envio do formulário
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Cadastrar:", email, password);
+    // Aqui vamos chamar a API futuramente
+  };
 
-    // Por enquanto, só mostramos no console o que o usuário digitou
-    console.log({ name, email, password });
-
-    // Aqui depois vamos conectar com o backend para realmente criar o usuário no banco
-  }
-
-  // JSX que será renderizado na tela
   return (
-    <main className="max-w-md mx-auto mt-20 p-4 border rounded shadow">
-      {/* Título da página */}
-      <h1 className="text-2xl font-bold mb-4">Cadastro</h1>
-
-      {/* Formulário de cadastro */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Campo para nome */}
-        <input
-          type="text"
-          placeholder="Nome"
-          value={name} // Valor atual do input
-          onChange={(e) => setName(e.target.value)} // Atualiza o estado ao digitar
-          className="border p-2 rounded"
-          required // Campo obrigatório
-        />
-
-        {/* Campo para email */}
-        <input
-          type="email"
-          placeholder="E-mail"
-          value={email} // Valor atual do input
-          onChange={(e) => setEmail(e.target.value)} // Atualiza o estado ao digitar
-          className="border p-2 rounded"
-          required // Campo obrigatório
-        />
-
-        {/* Campo para senha */}
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password} // Valor atual do input
-          onChange={(e) => setPassword(e.target.value)} // Atualiza o estado ao digitar
-          className="border p-2 rounded"
-          required // Campo obrigatório
-          minLength={6} // Senha deve ter no mínimo 6 caracteres
-        />
-
-        {/* Botão para enviar o formulário */}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
-        >
-          Cadastrar
-        </button>
-      </form>
-    </main>
+    <Grid>
+      <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Criar conta</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-600 mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-600 mb-1">Senha</label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+          >
+            Criar conta
+          </button>
+        </form>
+      </div>
+    </Grid>
   );
 }

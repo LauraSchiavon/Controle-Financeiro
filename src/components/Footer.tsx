@@ -2,6 +2,7 @@
 
 import React from "react";
 import Grid from "./Grid";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -17,15 +18,15 @@ export default function Footer() {
           {/* Links adicionais do footer */}
           {/* mt-2 no mobile para dar espaçamento em cima, removido no desktop */}
           <div className="mt-2 md:mt-0">
-            <a href="#" className="hover:text-white mx-2">
+            <Link href="#" className="hover:text-white mx-2">
               Privacidade
-            </a>
-            <a href="#" className="hover:text-white mx-2">
+            </Link>
+            <Link href="#" className="hover:text-white mx-2">
               Termos
-            </a>
-            <a href="#" className="hover:text-white mx-2">
+            </Link>
+            <Link href="#" className="hover:text-white mx-2">
               Contato
-            </a>
+            </Link>
           </div>
         </div>
       </Grid>
