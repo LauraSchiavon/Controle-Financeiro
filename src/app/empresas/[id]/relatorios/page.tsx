@@ -9,6 +9,7 @@ import MetasPorCategoria from "@/components/MetasPorCategoria";
 import FiltroPeriodo from "@/components/FiltroPeriodo";
 import ComparativoMensal from "@/components/ComparativoMensal";
 import ExportarRelatorio from "@/components/ExportarRelatorio";
+import { useParams } from "next/navigation";
 
 // Tipo da meta
 interface Meta {
@@ -18,6 +19,9 @@ interface Meta {
 }
 
 export default function RelatoriosPage() {
+  const { id } = useParams(); // id da empresa pela URL
+  const empresaId = Number(id);
+
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
   const [metas, setMetas] = useState<Meta[]>([]);
   const [mesSelecionado, setMesSelecionado] = useState(
@@ -26,6 +30,8 @@ export default function RelatoriosPage() {
   const [anoSelecionado, setAnoSelecionado] = useState(
     new Date().getFullYear()
   );
+
+  // Filtra transações pelo mês e ano selecionados
   const transacoesFiltradas = transacoes.filter((t) => {
     const data = new Date(t.data);
     return (
@@ -34,25 +40,27 @@ export default function RelatoriosPage() {
     );
   });
 
-  // Carrega transações
+  // Carrega transações da empresa
   const fetchTransacoes = async () => {
-    const res = await fetch("/api/transacoes");
+    const res = await fetch(`/api/empresas/${empresaId}/transacoes`);
     const data = await res.json();
     setTransacoes(data);
   };
 
-  // Carrega metas
+  // Carrega metas da empresa
   const fetchMetas = async () => {
-    const res = await fetch("/api/metas");
+    const res = await fetch(`/api/empresas/${empresaId}/metas`);
     const data = await res.json();
     setMetas(data);
   };
 
   // Ao carregar a página, busca transações e metas
   useEffect(() => {
-    fetchTransacoes();
-    fetchMetas();
-  }, []);
+    if (empresaId) {
+      fetchTransacoes();
+      fetchMetas();
+    }
+  }, [empresaId]);
 
   return (
     <Grid>
@@ -60,6 +68,7 @@ export default function RelatoriosPage() {
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
           Relatórios
         </h1>
+
         <ExportarRelatorio transacoes={transacoesFiltradas} />
 
         <FiltroPeriodo
@@ -73,17 +82,19 @@ export default function RelatoriosPage() {
 
         {/* Gráficos de pizza e barra */}
         <ResumoGraficos transacoes={transacoesFiltradas} />
+
+        {/* Comparativo mensal */}
         <ComparativoMensal transacoes={transacoes} />
 
-        {/* Formulário para adicionar metas */}
-        <MetaForm onSuccess={fetchMetas} />
+        {/* Formulário para adicionar metas
+        <MetaForm onSuccess={fetchMetas} empresaId={empresaId} /> */}
 
         {/* Visualização das metas cadastradas com barra de progresso */}
-        <MetasPorCategoria
+        {/* <MetasPorCategoria
           transacoes={transacoes}
           metas={metas}
           onUpdate={fetchMetas}
-        />
+        /> */}
       </div>
     </Grid>
   );

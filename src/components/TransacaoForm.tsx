@@ -35,6 +35,7 @@ export default function TransacaoForm({
         categoria,
         forma_pagamento: formaPagamento,
         cartao_id: cartaoId ? Number(cartaoId) : null,
+        empresa_id: empresaId, // ✅ necessário para evitar erro de constraint
       }),
     });
 
@@ -121,7 +122,11 @@ export default function TransacaoForm({
       </select>
 
       {/* Seletor de Cartão */}
-      <CartaoSelector selected={cartaoId} onChange={setCartaoId} />
+      <CartaoSelector
+        selected={cartaoId}
+        onChange={setCartaoId}
+        empresaId={empresaId}
+      />
 
       <button
         type="submit"

@@ -31,7 +31,7 @@ export default function MetaForm({ onSuccess }: { onSuccess: () => void }) {
     if (!categoria || !limite) return;
 
     // Envia a requisição para a API
-    const res = await fetch("/api/metas", {
+    const res = await fetch("/api/empresas/[empresaId]/metas", {
       method: "POST",
       body: JSON.stringify({ categoria, limite: Number(limite) }),
     });

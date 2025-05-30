@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Grid from "@/components/Grid";
+import { useParams } from "next/navigation";
 
 interface Cartao {
   id: number;
@@ -10,7 +11,10 @@ interface Cartao {
   limite: number;
 }
 
-export default function InformacoesPage() {
+export default function CartoesPage() {
+  const { id } = useParams(); // empresaId pela URL
+  const empresaId = Number(id);
+
   const [cartoes, setCartoes] = useState<Cartao[]>([]);
   const [banco, setBanco] = useState("");
   const [final, setFinal] = useState("");
@@ -18,28 +22,34 @@ export default function InformacoesPage() {
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
   const fetchCartoes = () => {
-    fetch("/api/cartoes")
+    fetch(`/api/empresas/${empresaId}/cartoes`)
       .then((res) => res.json())
       .then(setCartoes);
   };
 
-  useEffect(fetchCartoes, []);
+  useEffect(() => {
+    if (empresaId) fetchCartoes();
+  }, [empresaId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = { banco, final, limite: Number(limite) };
 
     if (editandoId) {
-      await fetch("/api/cartoes", {
+      await fetch(`/api/empresas/${empresaId}/cartoes`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, id: editandoId }),
+        body: JSON.stringify({
+          ...payload,
+          id: editandoId,
+          empresa_id: empresaId,
+        }),
       });
     } else {
-      const res = await fetch("/api/cartoes", {
+      const res = await fetch(`/api/empresas/${empresaId}/cartoes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ banco, final, limite, empresaId }),
       });
 
       if (res.status === 409) {
@@ -57,10 +67,10 @@ export default function InformacoesPage() {
 
   const handleDelete = async (id: number) => {
     if (confirm("Deseja excluir este cartão?")) {
-      await fetch("/api/cartoes", {
+      await fetch(`/api/empresas/${empresaId}/cartoes`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, empresaId }),
       });
       fetchCartoes();
     }
@@ -76,9 +86,8 @@ export default function InformacoesPage() {
   return (
     <Grid>
       <div className="mt-10">
-        <h1 className="text-2xl font-bold mb-6">Informações & Cartões</h1>
+        <h1 className="text-2xl font-bold mb-6">Cartões da Empresa</h1>
 
-        {/* Formulário */}
         <form
           onSubmit={handleSubmit}
           className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded shadow mb-6"
@@ -118,7 +127,6 @@ export default function InformacoesPage() {
           </button>
         </form>
 
-        {/* Lista de cartões */}
         <div className="space-y-4">
           {cartoes.map((cartao) => (
             <div

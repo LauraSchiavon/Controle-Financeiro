@@ -65,7 +65,7 @@ export default function ResumoGraficos({
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
           Gastos por Categoria
         </h2>
-        <ResponsiveContainer width="100%" height={250}>
+        <ResponsiveContainer width="100%" height={290}>
           <PieChart>
             <Pie
               data={dadosCategoria}
