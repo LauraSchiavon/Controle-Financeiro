@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openDb } from "../../../../lib/db";
+import { openDb } from "../../../../../../lib/db";
 
 export async function DELETE(req: NextRequest) {
   const url = new URL(req.url);

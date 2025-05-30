@@ -1,3 +1,4 @@
+// src/components/TransacaoForm.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -5,8 +6,10 @@ import CartaoSelector from "./CartaoSelector";
 
 export default function TransacaoForm({
   onSuccess,
+  empresaId,
 }: {
   onSuccess: () => void;
+  empresaId: number; // 👈 adicione isso
 }) {
   const [titulo, setTitulo] = useState("");
   const [valor, setValor] = useState("");
@@ -18,11 +21,10 @@ export default function TransacaoForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!titulo || !valor || !tipo || !data || !categoria || !formaPagamento)
       return;
 
-    await fetch("/api/transacoes", {
+    await fetch(`/api/empresas/${empresaId}/transacoes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

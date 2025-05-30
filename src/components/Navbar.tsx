@@ -1,103 +1,62 @@
+// src/components/Navbar.tsx
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
-import Grid from "./Grid";
-import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false); // controla menu mobile
+  const pathname = usePathname();
+
+  // Verifica se está nas páginas de login ou register
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+
+  // Verifica se está em /empresas/[id]/...
+  const match = pathname.match(/^\/empresas\/(\d+)/);
+  const empresaId = match ? match[1] : null;
 
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white shadow-lg"
-    >
-      {/* Container centralizado */}
-      <Grid>
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="text-xl font-bold hover:opacity-90 transition"
-          >
-            Controle 💰
+    <nav className="bg-black text-white px-6 py-4 flex justify-between items-center shadow">
+      <div className="text-lg font-bold">💼 Controle Financeiro</div>
+
+      {/* Oculta os links se for página de login ou register */}
+      {!isAuthPage && (
+        <div className="space-x-4">
+          <Link href="/home" className="hover:underline">
+            Home
           </Link>
 
-          {/* Menu desktop */}
-          <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <Link href="/dashboard" className="hover:text-gray-300 transition">
-              Dashboard
-            </Link>
-            <Link href="/relatorios" className="hover:text-gray-300 transition">
-              Relatórios
-            </Link>
-            <Link
-              href="/informacoes"
-              className="hover:text-gray-300 transition"
-            >
-              Informações
-            </Link>
-          </div>
+          {empresaId && (
+            <>
+              <Link
+                href={`/empresas/${empresaId}/dashboard`}
+                className="hover:underline"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href={`/empresas/${empresaId}/relatorios`}
+                className="hover:underline"
+              >
+                Relatório
+              </Link>
+              <Link
+                href={`/empresas/${empresaId}/cartoes`}
+                className="hover:underline"
+              >
+                Cartões
+              </Link>
+            </>
+          )}
 
-          {/* Menu mobile botão hamburguer */}
-          <button
-            className="md:hidden"
-            onClick={() => setOpen(!open)}
-            aria-label="Abrir menu"
-          >
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {open ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
+          <Link href="/meu-perfil" className="hover:underline">
+            Meu Perfil
+          </Link>
+
+          <Link href="/login" className="hover:underline text-red-400">
+            Sair
+          </Link>
         </div>
-
-        {/* Menu mobile aberto */}
-        {open && (
-          <div className="md:hidden mt-2 pb-4 space-y-2 text-sm font-medium text-gray-200">
-            <Link
-              href="/dashboard"
-              className="block hover:text-white transition"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/relatorios"
-              className="block hover:text-white transition"
-            >
-              Relatórios
-            </Link>
-            <Link
-              href="/informacoes"
-              className="block hover:text-white transition"
-            >
-              Informações
-            </Link>
-          </div>
-        )}
-      </Grid>
-    </motion.nav>
+      )}
+    </nav>
   );
 }

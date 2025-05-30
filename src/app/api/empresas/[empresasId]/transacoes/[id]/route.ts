@@ -1,5 +1,5 @@
 // src/app/api/transacoes/[id]/route.ts
-import { openDb } from "../../../../../lib/db";
+import { openDb } from "../../../../../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // Rota DELETE para excluir uma transação

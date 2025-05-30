@@ -6,38 +6,38 @@ import TransacoesTable from "@/components/TransacoesTable";
 import { Transacao } from "@/components/TransacaoItem";
 import TransacaoForm from "@/components/TransacaoForm";
 import FiltroTransacoes from "@/components/FiltroTransacoes";
+import { useParams } from "next/navigation";
 
 export default function DashboardPage() {
+  const params = useParams();
+  const id = params?.id as string;
+
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
   const [filtros, setFiltros] = useState<any>({});
-
-  // Novos estados para controlar visibilidade
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   const fetchTransacoes = () => {
-    fetch("/api/transacoes")
+    fetch(`/api/empresas/${id}/transacoes`)
       .then((res) => res.json())
       .then((data) => setTransacoes(data));
   };
 
   useEffect(() => {
-    fetchTransacoes();
-  }, []);
+    if (id) fetchTransacoes();
+  }, [id]);
 
-  // Função para deletar uma transação por ID
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (transacaoId: number) => {
     const confirm = window.confirm("Tem certeza que deseja excluir?");
     if (!confirm) return;
 
-    await fetch(`/api/transacoes/${id}`, {
+    await fetch(`/api/empresas/${id}/transacoes/${transacaoId}`, {
       method: "DELETE",
     });
 
-    fetchTransacoes(); // Atualiza a lista após deletar
+    fetchTransacoes();
   };
 
-  // Aplica os filtros à lista
   const transacoesFiltradas = transacoes.filter((t) => {
     return (
       (!filtros.titulo ||
@@ -50,7 +50,6 @@ export default function DashboardPage() {
     );
   });
 
-  // Calcula totais com base nas transações filtradas
   const totalEntradas = transacoesFiltradas
     .filter((t) => t.tipo === "entrada")
     .reduce((acc, t) => acc + t.valor, 0);
@@ -68,7 +67,6 @@ export default function DashboardPage() {
           Minhas Transações
         </h1>
 
-        {/* Botões para mostrar/ocultar formulário e filtros */}
         <div className="flex flex-wrap gap-4 mb-6">
           <button
             onClick={() => setMostrarFormulario(!mostrarFormulario)}
@@ -85,17 +83,15 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Formulário de adicionar nova transação */}
-        {mostrarFormulario && <TransacaoForm onSuccess={fetchTransacoes} />}
+        {mostrarFormulario && (
+          <TransacaoForm onSuccess={fetchTransacoes} empresaId={Number(id)} />
+        )}
 
-        {/* Filtros */}
         {mostrarFiltros && (
           <FiltroTransacoes filtros={filtros} onChange={setFiltros} />
         )}
 
-        {/* Totais gerais */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          {/* Entradas */}
           <div className="bg-green-100 text-green-800 p-4 rounded shadow">
             <h3 className="text-sm font-semibold">Total de Entradas</h3>
             <p className="text-xl font-bold">
@@ -103,7 +99,6 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Saídas */}
           <div className="bg-red-100 text-red-800 p-4 rounded shadow">
             <h3 className="text-sm font-semibold">Total de Saídas</h3>
             <p className="text-xl font-bold">
@@ -111,7 +106,6 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Saldo */}
           <div className="bg-gray-100 text-gray-800 p-4 rounded shadow">
             <h3 className="text-sm font-semibold">Saldo Final</h3>
             <p className="text-xl font-bold">
@@ -120,7 +114,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Tabela com os dados filtrados */}
         <TransacoesTable
           transacoes={transacoesFiltradas}
           onDelete={handleDelete}

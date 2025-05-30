@@ -1,51 +1,84 @@
 // src/app/register/page.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Grid from "@/components/Grid";
 
 export default function RegisterPage() {
-  // Estados para os inputs do formulário
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
+  const [profissao, setProfissao] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [erro, setErro] = useState("");
 
-  // Função para lidar com o envio do formulário
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Cadastrar:", email, password);
-    // Aqui vamos chamar a API futuramente
+    setErro("");
+
+    const res = await fetch("/api/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, email, senha, profissao, telefone }),
+    });
+
+    if (res.ok) {
+      router.push("/home");
+    } else {
+      const erro = await res.json();
+      setErro(erro.error || "Erro ao criar conta");
+    }
   };
 
   return (
     <Grid>
       <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Criar conta</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-600 mb-1">Email</label>
-            <input
-              type="email"
-              className="w-full border border-gray-300 rounded px-3 py-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-600 mb-1">Senha</label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded px-3 py-2"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-4 text-black">
+          <input
+            placeholder="Nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+          <input
+            placeholder="Profissão"
+            value={profissao}
+            onChange={(e) => setProfissao(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+          />
+          <input
+            placeholder="Telefone"
+            value={telefone}
+            onChange={(e) => setTelefone(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+          {erro && <p className="text-red-500 text-sm">{erro}</p>}
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+            className="bg-black text-white py-2 px-4 rounded w-full hover:bg-gray-800"
           >
-            Criar conta
+            Cadastrar
           </button>
         </form>
       </div>
