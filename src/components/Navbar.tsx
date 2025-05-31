@@ -45,6 +45,12 @@ export default function Navbar() {
               >
                 Cartões
               </Link>
+              <Link
+                href={`/empresas/${empresaId}/categorias`}
+                className="hover:underline"
+              >
+                Categorias
+              </Link>
             </>
           )}
 

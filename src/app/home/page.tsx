@@ -57,8 +57,10 @@ export default function HomePage() {
   };
 
   // Redireciona para o dashboard da empresa clicada
+
   const acessarEmpresa = (empresaId: number) => {
-    router.push(`/empresas/${empresaId}/dashboard`);
+    localStorage.setItem("empresa_id", String(empresaId)); // salva no localStorage
+    router.push(`/empresas/${empresaId}/dashboard`); // redireciona pra onde quiser
   };
 
   return (

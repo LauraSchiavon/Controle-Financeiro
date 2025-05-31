@@ -3,13 +3,8 @@ import { openDb } from "./db";
 
 async function seed() {
   const db = await openDb();
-
-  // 🔄 Remove tabelas antigas (caso existam)
-  await db.exec(`DROP TABLE IF EXISTS metas`);
-  await db.exec(`DROP TABLE IF EXISTS transacoes`);
-  await db.exec(`DROP TABLE IF EXISTS cartoes`);
-  await db.exec(`DROP TABLE IF EXISTS empresas`);
-  await db.exec(`DROP TABLE IF EXISTS usuarios`);
+  await db.exec(`DROP TABLE IF EXISTS categorias`);
+  await db.exec(`DROP TABLE IF EXISTS nichos`);
 
   // 👤 Usuários
   await db.exec(`
@@ -73,6 +68,28 @@ async function seed() {
     );
   `);
 
+  // 🧩 Nichos
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS nichos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    tipo TEXT CHECK(tipo IN ('entrada', 'saida')) NOT NULL,
+    empresa_id INTEGER NOT NULL,
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+  );
+`);
+
+  // 🏷️ Categorias
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS categorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    nicho_id INTEGER NOT NULL,
+    empresa_id INTEGER NOT NULL,
+    FOREIGN KEY (nicho_id) REFERENCES nichos(id),
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+  );
+`);
   console.log("✅ Banco recriado com todas as tabelas atualizadas!");
 }
 
