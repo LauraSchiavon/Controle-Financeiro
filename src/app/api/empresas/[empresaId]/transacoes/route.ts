@@ -1,14 +1,11 @@
-// src/app/api/empresas/[empresaId]/transacoes/route.ts
 import { openDb } from "../../../../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// 🔧 Utilitário para extrair empresaId da URL
 function getEmpresaIdFromPath(pathname: string): number | null {
   const match = pathname.match(/\/empresas\/(\d+)/);
   return match ? Number(match[1]) : null;
 }
 
-// ✅ GET – listar transações da empresa
 export async function GET(req: NextRequest) {
   try {
     const empresaId = getEmpresaIdFromPath(req.nextUrl.pathname);
@@ -22,9 +19,13 @@ export async function GET(req: NextRequest) {
       `
       SELECT 
         t.*, 
-        c.banco 
+        c.banco,
+        cat.nome AS categoria_nome,
+        n.nome AS nicho_nome
       FROM transacoes t
       LEFT JOIN cartoes c ON t.cartao_id = c.id
+      LEFT JOIN categorias cat ON t.categoria_id = cat.id
+      LEFT JOIN nichos n ON t.nicho_id = n.id
       WHERE t.empresa_id = ?
       ORDER BY t.data DESC
       `,
@@ -33,17 +34,28 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(transacoes);
   } catch (error) {
-    console.error("Erro no GET /transacoes:", error);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    console.error("❌ Erro no GET /transacoes:", error);
+    return NextResponse.json(
+      { error: "Erro interno ao buscar transações" },
+      { status: 500 }
+    );
   }
 }
 
-// ✅ POST – criar nova transação para a empresa
 export async function POST(req: NextRequest) {
   try {
     const empresaId = getEmpresaIdFromPath(req.nextUrl.pathname);
-    const { titulo, valor, tipo, data, categoria, forma_pagamento, cartao_id } =
-      await req.json();
+    const {
+      titulo,
+      valor,
+      tipo,
+      data,
+      fornecedor, // agora como texto
+      categoria_id,
+      nicho_id,
+      forma_pagamento,
+      cartao_id,
+    } = await req.json();
 
     if (
       !empresaId ||
@@ -51,7 +63,8 @@ export async function POST(req: NextRequest) {
       !valor ||
       !tipo ||
       !data ||
-      !categoria ||
+      !fornecedor ||
+      !categoria_id ||
       !forma_pagamento
     ) {
       return NextResponse.json(
@@ -65,16 +78,18 @@ export async function POST(req: NextRequest) {
     await db.run(
       `
       INSERT INTO transacoes (
-        titulo, valor, tipo, data, categoria, forma_pagamento, cartao_id, empresa_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        titulo, valor, tipo, data, fornecedor, categoria_id, nicho_id, forma_pagamento, cartao_id, empresa_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       titulo,
       valor,
       tipo,
       data,
-      categoria,
+      fornecedor,
+      categoria_id,
+      nicho_id || null,
       forma_pagamento,
-      cartao_id || null, // permite null
+      cartao_id || null,
       empresaId
     );
 

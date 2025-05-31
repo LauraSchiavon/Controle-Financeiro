@@ -1,19 +1,26 @@
 // src/components/TransacaoItem.tsx
 import React from "react";
 
-// Tipo da transação (reaproveitamos aqui)
 export interface Transacao {
   id: number;
   titulo: string;
   valor: number;
   tipo: "entrada" | "saida";
   data: string;
+  fornecedor: string;
   forma_pagamento: string;
-  categoria: string;
+  categoria_nome: string;
+  nicho_nome: string;
   banco: string;
 }
-// Componente que representa uma linha da tabela
-export default function TransacaoItem({ transacao }: { transacao: Transacao }) {
+
+export default function TransacaoItem({
+  transacao,
+  onDelete,
+}: {
+  transacao: Transacao;
+  onDelete?: (id: number) => void;
+}) {
   return (
     <tr className="border-t">
       <td className="px-4 py-2">{transacao.titulo}</td>
@@ -28,9 +35,21 @@ export default function TransacaoItem({ transacao }: { transacao: Transacao }) {
         R$ {transacao.valor.toFixed(2).replace(".", ",")}
       </td>
       <td className="px-4 py-2">{transacao.data}</td>
+      <td className="px-4 py-2 capitalize">{transacao.fornecedor}</td>
       <td className="px-4 py-2 capitalize">{transacao.forma_pagamento}</td>
-      <td className="px-4 py-2 capitalize">{transacao.categoria}</td>
+      <td className="px-4 py-2 capitalize">{transacao.categoria_nome}</td>
+      <td className="px-4 py-2 capitalize">{transacao.nicho_nome}</td>
       <td className="px-4 py-2 capitalize">{transacao.banco}</td>
+      {onDelete && (
+        <td className="px-4 py-2">
+          <button
+            onClick={() => onDelete(transacao.id)}
+            className="text-red-600 hover:text-red-800 font-medium"
+          >
+            Excluir
+          </button>
+        </td>
+      )}
     </tr>
   );
 }

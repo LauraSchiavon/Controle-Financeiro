@@ -2,43 +2,39 @@ import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "../../../../../../lib/db";
 
 // GET – Listar nichos da empresa
+// ✅ Evita erro ao acessar context.params
+export const dynamic = "force-dynamic";
+
+// GET – Listar nichos
 export async function GET(
   req: NextRequest,
-  { params }: { params: { empresaId: string } }
+  context: { params: { empresaId: string } }
 ) {
   try {
+    const { empresaId } = context.params;
+
     const db = await openDb();
     const nichos = await db.all(
       "SELECT * FROM nichos WHERE empresa_id = ? ORDER BY nome",
-      params.empresaId
+      empresaId
     );
+
     return NextResponse.json(nichos);
-  } catch (err) {
-    console.error("ERRO GET /nichos:", err);
-    return NextResponse.json(
-      { error: "Erro interno ao buscar nichos" },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error("Erro ao buscar nichos:", error);
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
 
 // POST – Criar novo nicho
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { empresaId: string } }
-) {
+export async function POST(req: NextRequest, context: any) {
   try {
-    const empresaId = Number(params.empresaId);
+    const { empresaId } = context.params;
     const { nome, tipo } = await req.json();
 
-    console.log("🚀 Recebido:", { nome, tipo, empresaId });
-
-    if (!nome || !tipo || isNaN(empresaId)) {
+    if (!nome || !tipo || isNaN(Number(empresaId))) {
       return NextResponse.json(
-        {
-          error:
-            "Dados inválidos para criar nicho (nome, tipo ou empresaId ausente)",
-        },
+        { error: "Dados inválidos (nome, tipo ou empresaId ausente)" },
         { status: 400 }
       );
     }
@@ -55,8 +51,8 @@ export async function POST(
       { message: "Nicho criado com sucesso" },
       { status: 201 }
     );
-  } catch (err) {
-    console.error("ERRO POST /nichos:", err);
+  } catch (error) {
+    console.error("❌ ERRO ao criar nicho:", error);
     return NextResponse.json(
       { error: "Erro interno ao criar nicho" },
       { status: 500 }

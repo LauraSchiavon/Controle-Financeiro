@@ -17,12 +17,22 @@ export default function DashboardPage() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
-  const fetchTransacoes = () => {
-    fetch(`/api/empresas/${id}/transacoes`)
-      .then((res) => res.json())
-      .then((data) => setTransacoes(data));
-  };
+  const fetchTransacoes = async () => {
+    try {
+      const res = await fetch(`/api/empresas/${id}/transacoes`);
+      const data = await res.json();
 
+      if (Array.isArray(data)) {
+        setTransacoes(data);
+      } else {
+        console.error("❌ Erro ao buscar transações:", data);
+        setTransacoes([]); // Garante que o valor seja um array
+      }
+    } catch (error) {
+      console.error("❌ Erro inesperado ao buscar transações:", error);
+      setTransacoes([]); // Em caso de falha
+    }
+  };
   useEffect(() => {
     if (id) fetchTransacoes();
   }, [id]);
@@ -45,7 +55,7 @@ export default function DashboardPage() {
       (!filtros.tipo || t.tipo === filtros.tipo) &&
       (!filtros.forma_pagamento ||
         t.forma_pagamento === filtros.forma_pagamento) &&
-      (!filtros.categoria || t.categoria === filtros.categoria) &&
+      (!filtros.categoria || t.categoria_nome === filtros.categoria) &&
       (!filtros.data || t.data === filtros.data)
     );
   });
