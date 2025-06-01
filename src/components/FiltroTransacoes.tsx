@@ -1,17 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-// Tipos de filtros que vamos controlar
 interface Filtros {
   titulo?: string;
   tipo?: string;
   forma_pagamento?: string;
   categoria?: string;
+  nicho?: string;
+  cartao?: string;
+  fornecedor?: string;
+  valor?: string;
   data?: string;
+  empresaId: number;
 }
 
-// Props: recebe os filtros e uma função para atualizar
 export default function FiltroTransacoes({
   filtros,
   onChange,
@@ -19,11 +22,28 @@ export default function FiltroTransacoes({
   filtros: Filtros;
   onChange: (novosFiltros: Filtros) => void;
 }) {
+  const [categorias, setCategorias] = useState<{ id: number; nome: string }[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      if (!filtros.tipo || !filtros.empresaId) return;
+
+      const res = await fetch(
+        `/api/empresas/${filtros.empresaId}/categorias?tipo=${filtros.tipo}`
+      );
+      const data = await res.json();
+      setCategorias(data || []);
+    };
+
+    fetchCategorias();
+  }, [filtros.tipo, filtros.empresaId]);
+
   return (
-    <div className="bg-white p-4 rounded shadow mb-6 space-y-3">
+    <div className="bg-black p-4 rounded shadow mb-6 space-y-3">
       <h2 className="text-lg font-semibold">Filtros</h2>
 
-      {/* Filtro por título */}
       <input
         type="text"
         placeholder="Buscar por título"
@@ -32,7 +52,6 @@ export default function FiltroTransacoes({
         className="w-full border px-3 py-2 rounded"
       />
 
-      {/* Filtro por tipo */}
       <select
         value={filtros.tipo || ""}
         onChange={(e) => onChange({ ...filtros, tipo: e.target.value })}
@@ -43,7 +62,6 @@ export default function FiltroTransacoes({
         <option value="saida">Saída</option>
       </select>
 
-      {/* Filtro por forma de pagamento */}
       <select
         value={filtros.forma_pagamento || ""}
         onChange={(e) =>
@@ -58,22 +76,51 @@ export default function FiltroTransacoes({
         <option value="dinheiro">Dinheiro</option>
       </select>
 
-      {/* Filtro por categoria */}
       <select
         value={filtros.categoria || ""}
         onChange={(e) => onChange({ ...filtros, categoria: e.target.value })}
         className="w-full border px-3 py-2 rounded"
       >
         <option value="">Todas as categorias</option>
-        <option value="alimentacao">Alimentação</option>
-        <option value="transporte">Transporte</option>
-        <option value="moradia">Moradia</option>
-        <option value="lazer">Lazer</option>
-        <option value="salario">Salário</option>
-        <option value="outros">Outros</option>
+        {categorias.map((cat) => (
+          <option key={cat.id} value={cat.nome}>
+            {cat.nome}
+          </option>
+        ))}
       </select>
 
-      {/* Filtro por data */}
+      <input
+        type="text"
+        placeholder="Nicho"
+        value={filtros.nicho || ""}
+        onChange={(e) => onChange({ ...filtros, nicho: e.target.value })}
+        className="w-full border px-3 py-2 rounded"
+      />
+
+      <input
+        type="text"
+        placeholder="Cartão"
+        value={filtros.cartao || ""}
+        onChange={(e) => onChange({ ...filtros, cartao: e.target.value })}
+        className="w-full border px-3 py-2 rounded"
+      />
+
+      <input
+        type="text"
+        placeholder="Fornecedor"
+        value={filtros.fornecedor || ""}
+        onChange={(e) => onChange({ ...filtros, fornecedor: e.target.value })}
+        className="w-full border px-3 py-2 rounded"
+      />
+
+      <input
+        type="number"
+        placeholder="Valor exato"
+        value={filtros.valor || ""}
+        onChange={(e) => onChange({ ...filtros, valor: e.target.value })}
+        className="w-full border px-3 py-2 rounded"
+      />
+
       <input
         type="date"
         value={filtros.data || ""}

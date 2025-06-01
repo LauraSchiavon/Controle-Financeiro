@@ -6,6 +6,7 @@ function getEmpresaIdFromPath(pathname: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
+// GET – Listar transações
 export async function GET(req: NextRequest) {
   try {
     const empresaId = getEmpresaIdFromPath(req.nextUrl.pathname);
@@ -14,7 +15,6 @@ export async function GET(req: NextRequest) {
     }
 
     const db = await openDb();
-
     const transacoes = await db.all(
       `
       SELECT 
@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST – Criar transação
 export async function POST(req: NextRequest) {
   try {
     const empresaId = getEmpresaIdFromPath(req.nextUrl.pathname);
@@ -50,28 +51,27 @@ export async function POST(req: NextRequest) {
       valor,
       tipo,
       data,
-      fornecedor, // agora como texto
+      fornecedor,
       categoria_id,
       nicho_id,
       forma_pagamento,
       cartao_id,
     } = await req.json();
 
-    if (
-      !empresaId ||
-      !titulo ||
-      !valor ||
-      !tipo ||
-      !data ||
-      !fornecedor ||
-      !categoria_id ||
-      !forma_pagamento
-    ) {
+    if (!empresaId || !titulo || !valor || !data) {
       return NextResponse.json(
         { error: "Campos obrigatórios ausentes" },
         { status: 400 }
       );
     }
+
+    // 🔧 Corrige valor se vier como string com 'R$', vírgula etc.
+    const valorNumerico =
+      typeof valor === "string"
+        ? parseFloat(
+            valor.replace("R$", "").replace(".", "").replace(",", ".").trim()
+          )
+        : valor;
 
     const db = await openDb();
 
@@ -82,13 +82,13 @@ export async function POST(req: NextRequest) {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       titulo,
-      valor,
-      tipo,
+      valorNumerico,
+      tipo || "saida",
       data,
-      fornecedor,
-      categoria_id,
+      fornecedor || "",
+      categoria_id || null,
       nicho_id || null,
-      forma_pagamento,
+      forma_pagamento || "",
       cartao_id || null,
       empresaId
     );
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Erro no POST /transacoes:", error);
+    console.error("❌ Erro no POST /transacoes:", error);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }

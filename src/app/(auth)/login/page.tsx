@@ -13,27 +13,21 @@ export default function LoginPage() {
   const router = useRouter();
 
   // Função chamada ao submeter o formulário de login
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Busca todos os usuários cadastrados no localStorage
-    const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha }),
+    });
 
-    // Verifica se existe um usuário com o email e senha fornecidos
-    const usuario = usuarios.find(
-      (u: any) => u.email === email && u.senha === senha
-    );
-
-    // Se não encontrar, mostra mensagem de erro
-    if (!usuario) {
-      setErro("E-mail ou senha incorretos.");
+    if (!res.ok) {
+      const data = await res.json();
+      setErro(data.error || "Erro ao fazer login");
       return;
     }
 
-    // ✅ Se login for bem-sucedido, salva o ID do usuário logado no localStorage
-    localStorage.setItem("usuario_id", String(usuario.id));
-
-    // Redireciona para a página home
     router.push("/home");
   };
 

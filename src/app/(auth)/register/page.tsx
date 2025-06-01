@@ -1,4 +1,3 @@
-// src/app/register/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -19,25 +18,39 @@ export default function RegisterPage() {
     e.preventDefault();
     setErro("");
 
-    const res = await fetch("/api/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, email, senha, profissao, telefone }),
-    });
+    try {
+      const res = await fetch("/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, senha, profissao, telefone }),
+      });
 
-    if (res.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErro(data.error || "Erro ao criar conta");
+        return;
+      }
+
+      // ✅ Armazenar o token JWT no cookie
+      document.cookie = `token=${data.token}; path=/`;
+
+      // Redireciona para página inicial após login automático
       router.push("/home");
-    } else {
-      const erro = await res.json();
-      setErro(erro.error || "Erro ao criar conta");
+    } catch (err) {
+      console.error("Erro no cadastro:", err);
+      setErro("Erro inesperado ao registrar.");
     }
   };
 
   return (
     <Grid>
-      <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Criar conta</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 text-black">
+      <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow text-black">
+        <h1 className="text-2xl font-bold mb-4">Criar conta</h1>
+
+        {erro && <p className="text-red-600 text-sm mb-2">{erro}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             placeholder="Nome"
             value={nome}
@@ -73,10 +86,9 @@ export default function RegisterPage() {
             required
             className="w-full border px-3 py-2 rounded"
           />
-          {erro && <p className="text-red-500 text-sm">{erro}</p>}
           <button
             type="submit"
-            className="bg-black text-white py-2 px-4 rounded w-full hover:bg-gray-800"
+            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
           >
             Cadastrar
           </button>

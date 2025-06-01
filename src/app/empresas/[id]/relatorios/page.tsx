@@ -10,6 +10,7 @@ import FiltroPeriodo from "@/components/FiltroPeriodo";
 import ComparativoMensal from "@/components/ComparativoMensal";
 import ExportarRelatorio from "@/components/ExportarRelatorio";
 import { useParams } from "next/navigation";
+import ImportarTransacoes from "@/components/ImportarTransacoes";
 
 // Tipo da meta
 interface Meta {
