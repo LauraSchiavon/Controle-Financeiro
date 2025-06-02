@@ -3,14 +3,13 @@ import { openDb } from "../../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret"; // ⚠️ Defina no .env.local
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 
 export async function POST(req: NextRequest) {
   try {
     const { nome, email, senha, profissao, telefone } = await req.json();
     const db = await openDb();
 
-    // 🔍 Verifica se já existe um usuário com o e-mail
     const existe = await db.get(
       "SELECT * FROM usuarios WHERE email = ?",
       email
@@ -22,7 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Cria o usuário no banco de dados
+    // ✅ Cria o usuário no banco
     const result = await db.run(
       "INSERT INTO usuarios (nome, email, senha, profissao, telefone) VALUES (?, ?, ?, ?, ?)",
       nome,
@@ -32,35 +31,26 @@ export async function POST(req: NextRequest) {
       telefone
     );
 
-    // ✅ Cria o token JWT com o ID do usuário recém-criado
-    const token = jwt.sign(
-      {
-        id: result.lastID,
-        nome,
-        email,
-      },
-      JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const novoUsuario = {
+      id: result.lastID,
+      nome,
+      email,
+    };
 
-    // 🔐 Retorna o token para o front
-    return NextResponse.json({ token });
+    const token = jwt.sign(novoUsuario, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // ✅ Agora retornamos o usuário + token para o front
+    return NextResponse.json({
+      token,
+      usuario: novoUsuario,
+    });
   } catch (error) {
     console.error("Erro ao registrar:", error);
     return NextResponse.json(
       { error: "Erro interno no servidor" },
       { status: 500 }
     );
-  }
-}
-
-export async function GET() {
-  try {
-    const db = await openDb();
-    const usuarios = await db.all("SELECT * FROM usuarios");
-    return NextResponse.json(usuarios);
-  } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }

@@ -1,14 +1,12 @@
 // src/app/api/empresas/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "../../../../lib/db";
 
-// ========================
-// GET – Lista as empresas do usuário
-// ========================
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const usuario_id = searchParams.get("usuario_id"); // Pega o ID do usuário via query param
+  const usuario_id = searchParams.get("usuario_id");
+
+  console.log("🔎 GET /api/empresas → usuario_id:", usuario_id);
 
   if (!usuario_id) {
     return NextResponse.json(
@@ -18,40 +16,41 @@ export async function GET(req: NextRequest) {
   }
 
   const db = await openDb();
-
-  // Busca apenas empresas associadas ao usuário
   const empresas = await db.all(
     "SELECT * FROM empresas WHERE usuario_id = ?",
     usuario_id
   );
 
+  console.log("📦 Empresas encontradas:", empresas);
   return NextResponse.json(empresas);
 }
 
-// ========================
-// POST – Cria uma nova empresa associada ao usuário
-// ========================
 export async function POST(req: NextRequest) {
-  const { nome, usuario_id } = await req.json();
+  const body = await req.json();
+  const { nome, usuario_id } = body;
 
-  // Validação dos campos obrigatórios
+  console.log("📨 POST /api/empresas:", body);
+
   if (!nome || !usuario_id) {
+    console.error("❌ Dados inválidos recebidos no POST");
     return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
   }
 
   const db = await openDb();
 
-  // Cria a nova empresa no banco associada ao usuário
   const result = await db.run(
     "INSERT INTO empresas (nome, usuario_id) VALUES (?, ?)",
     nome,
     usuario_id
   );
 
-  // Retorna a nova empresa criada
-  return NextResponse.json({
+  const novaEmpresa = {
     id: result.lastID,
     nome,
     usuario_id,
-  });
+  };
+
+  console.log("✅ Empresa criada com sucesso:", novaEmpresa);
+
+  return NextResponse.json(novaEmpresa);
 }

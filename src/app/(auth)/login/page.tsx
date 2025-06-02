@@ -22,10 +22,19 @@ export default function LoginPage() {
       body: JSON.stringify({ email, senha }),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      const data = await res.json();
       setErro(data.error || "Erro ao fazer login");
       return;
+    }
+
+    // ✅ Salva o ID do usuário no localStorage
+    if (data.usuario?.id) {
+      localStorage.setItem("usuario_id", data.usuario.id);
+      console.log("👤 usuario_id salvo:", data.usuario.id);
+    } else {
+      console.warn("⚠️ Resposta sem ID de usuário.");
     }
 
     router.push("/home");

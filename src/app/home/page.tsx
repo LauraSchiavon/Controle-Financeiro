@@ -1,4 +1,3 @@
-// src/app/home/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -12,55 +11,70 @@ interface Empresa {
 }
 
 export default function HomePage() {
-  const [empresas, setEmpresas] = useState<Empresa[]>([]); // Armazena empresas do usuário
-  const [novaEmpresa, setNovaEmpresa] = useState(""); // Input controlado para nova empresa
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [novaEmpresa, setNovaEmpresa] = useState("");
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const router = useRouter();
 
-  // Pega o ID do usuário logado salvo no localStorage
-  const usuario_id =
-    typeof window !== "undefined" ? localStorage.getItem("usuario_id") : null;
-
-  // Carrega as empresas do usuário logado assim que a página for montada
+  // Carrega o usuario_id do localStorage assim que a página for montada
   useEffect(() => {
-    if (!usuario_id) return;
+    if (typeof window !== "undefined") {
+      const id = localStorage.getItem("usuario_id");
+      console.log("👤 usuario_id carregado:", id);
+      setUsuarioId(id);
+    }
+  }, []);
 
-    // Faz requisição para a API, filtrando pelo usuário logado
-    fetch(`/api/empresas?usuario_id=${usuario_id}`)
+  // Carrega as empresas do usuário logado quando o ID estiver disponível
+  useEffect(() => {
+    if (!usuarioId) return;
+
+    fetch(`/api/empresas?usuario_id=${usuarioId}`)
       .then((res) => res.json())
-      .then((data) => setEmpresas(data)); // Atualiza o estado com as empresas retornadas
-  }, [usuario_id]);
+      .then((data) => {
+        console.log("📦 Empresas carregadas:", data);
+        setEmpresas(data);
+      });
+  }, [usuarioId]);
 
-  // Função que adiciona uma nova empresa para o usuário
+  // Adiciona nova empresa
   const adicionarEmpresa = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!novaEmpresa || !usuario_id) return;
+    if (!novaEmpresa || !usuarioId) {
+      console.warn("❌ Nome da empresa ou usuário_id ausente");
+      return;
+    }
+
+    console.log("🚀 Enviando nova empresa:", {
+      nome: novaEmpresa,
+      usuario_id: usuarioId,
+    });
 
     const res = await fetch("/api/empresas", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nome: novaEmpresa,
-        usuario_id, // ✅ associa a empresa ao usuário logado
+        usuario_id: usuarioId,
       }),
     });
 
+    const data = await res.json();
+    console.log("🔁 Resposta da API:", res.status, data);
+
     if (res.ok) {
-      const nova = await res.json();
-      setEmpresas((prev) => [...prev, nova]); // Adiciona a nova empresa na tela
-      setNovaEmpresa(""); // Limpa o campo de input
+      setEmpresas((prev) => [...prev, data]);
+      setNovaEmpresa("");
     } else {
-      console.error("Erro ao salvar empresa");
+      console.error("❌ Erro ao salvar empresa:", data);
     }
   };
 
   // Redireciona para o dashboard da empresa clicada
-
   const acessarEmpresa = (empresaId: number) => {
-    localStorage.setItem("empresa_id", String(empresaId)); // salva no localStorage
-    router.push(`/empresas/${empresaId}/dashboard`); // redireciona pra onde quiser
+    localStorage.setItem("empresa_id", String(empresaId));
+    router.push(`/empresas/${empresaId}/dashboard`);
   };
 
   return (
@@ -70,7 +84,7 @@ export default function HomePage() {
           Minhas Empresas
         </h1>
 
-        {/* Formulário para cadastrar nova empresa */}
+        {/* Formulário de cadastro */}
         <form
           onSubmit={adicionarEmpresa}
           className="flex gap-4 mb-6 bg-white dark:bg-gray-900 p-4 rounded shadow"
@@ -90,7 +104,7 @@ export default function HomePage() {
           </button>
         </form>
 
-        {/* Lista de empresas do usuário */}
+        {/* Lista de empresas */}
         <div className="space-y-4">
           {empresas.map((empresa) => (
             <div

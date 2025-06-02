@@ -32,6 +32,14 @@ export default function RegisterPage() {
         return;
       }
 
+      // ✅ Armazena o ID do usuário no localStorage
+      if (data.usuario?.id) {
+        localStorage.setItem("usuario_id", String(data.usuario.id));
+        console.log("✅ usuario_id salvo após cadastro:", data.usuario.id);
+      } else {
+        console.warn("⚠️ Resposta não contém usuario.id");
+      }
+
       // ✅ Armazenar o token JWT no cookie
       document.cookie = `token=${data.token}; path=/`;
 

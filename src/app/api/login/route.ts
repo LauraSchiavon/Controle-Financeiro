@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "../../../../lib/db";
 import jwt from "jsonwebtoken";
 
-// POST – Autenticar usuário
 export async function POST(req: NextRequest) {
   const { email, senha } = await req.json();
 
@@ -21,19 +20,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 🔐 Gerar token JWT
   const token = jwt.sign(
     { id: usuario.id, nome: usuario.nome, email: usuario.email },
     process.env.JWT_SECRET!,
     { expiresIn: "7d" }
   );
 
-  // 🍪 Definir cookie com o token
-  const response = NextResponse.json({ message: "Login bem-sucedido" });
+  const response = NextResponse.json({
+    message: "Login bem-sucedido",
+    usuario: {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+    },
+  });
+
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7, // 7 dias
+    maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
 

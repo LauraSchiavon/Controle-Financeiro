@@ -8,15 +8,20 @@ export default function Navbar() {
   const pathname = usePathname();
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   const [logado, setLogado] = useState(false);
+  const [carregado, setCarregado] = useState(false); // 👈 novo estado
 
   useEffect(() => {
     const id = localStorage.getItem("empresa_id");
     const usuarioId = localStorage.getItem("usuario_id");
     setEmpresaId(id);
     setLogado(!!usuarioId);
+    setCarregado(true); // 👈 marca que terminou de carregar
   }, []);
 
   const isHomePage = pathname === "/login" || pathname === "/register";
+
+  // Evita piscar a navbar incorreta
+  if (!carregado) return null;
 
   if (isHomePage) {
     return (
@@ -61,12 +66,6 @@ export default function Navbar() {
             >
               Categoria
             </Link>
-            {/* <Link
-              href={`/empresas/${empresaId}/transacoes`}
-              className="hover:underline"
-            >
-              Transações
-            </Link> */}
           </>
         )}
 
