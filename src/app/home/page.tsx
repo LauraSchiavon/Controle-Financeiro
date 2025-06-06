@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Grid from "@/components/Grid";
 import { useRouter } from "next/navigation";
 
-// Interface para tipar os dados de empresa
 interface Empresa {
   id: number;
   nome: string;
@@ -16,107 +15,88 @@ export default function HomePage() {
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const router = useRouter();
 
-  // Carrega o usuario_id do localStorage assim que a página for montada
   useEffect(() => {
     if (typeof window !== "undefined") {
       const id = localStorage.getItem("usuario_id");
-      console.log("👤 usuario_id carregado:", id);
       setUsuarioId(id);
     }
   }, []);
 
-  // Carrega as empresas do usuário logado quando o ID estiver disponível
   useEffect(() => {
     if (!usuarioId) return;
 
     fetch(`/api/empresas?usuario_id=${usuarioId}`)
       .then((res) => res.json())
-      .then((data) => {
-        console.log("📦 Empresas carregadas:", data);
-        setEmpresas(data);
-      });
+      .then((data) => setEmpresas(data));
   }, [usuarioId]);
 
-  // Adiciona nova empresa
   const adicionarEmpresa = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!novaEmpresa || !usuarioId) {
-      console.warn("❌ Nome da empresa ou usuário_id ausente");
-      return;
-    }
-
-    console.log("🚀 Enviando nova empresa:", {
-      nome: novaEmpresa,
-      usuario_id: usuarioId,
-    });
+    if (!novaEmpresa || !usuarioId) return;
 
     const res = await fetch("/api/empresas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nome: novaEmpresa,
-        usuario_id: usuarioId,
-      }),
+      body: JSON.stringify({ nome: novaEmpresa, usuario_id: usuarioId }),
     });
 
     const data = await res.json();
-    console.log("🔁 Resposta da API:", res.status, data);
 
     if (res.ok) {
       setEmpresas((prev) => [...prev, data]);
       setNovaEmpresa("");
-    } else {
-      console.error("❌ Erro ao salvar empresa:", data);
     }
   };
 
-  // Redireciona para o dashboard da empresa clicada
   const acessarEmpresa = (empresaId: number) => {
     localStorage.setItem("empresa_id", String(empresaId));
-    router.push(`/empresas/${empresaId}/dashboard`);
+
+    // 🔔 Dispara evento customizado para avisar a navbar
+    window.dispatchEvent(new Event("empresaSelecionada"));
+
+    // Redireciona
+    window.location.href = `/empresas/${empresaId}/dashboard`;
   };
 
   return (
     <Grid>
-      <div className="mt-10">
-        <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+      <div className="mt-12 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-semibold mb-8 text-[#000000] dark:text-[#f1ecdf]">
           Minhas Empresas
         </h1>
 
-        {/* Formulário de cadastro */}
         <form
           onSubmit={adicionarEmpresa}
-          className="flex gap-4 mb-6 bg-white dark:bg-gray-900 p-4 rounded shadow"
+          className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#f1ecdf] dark:bg-[#1a1a1a] p-6 rounded-2xl shadow-lg"
         >
           <input
             placeholder="Nome da empresa"
             value={novaEmpresa}
             onChange={(e) => setNovaEmpresa(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded"
+            className="flex-1 px-4 py-2 bg-white dark:bg-[#2a2a2a] border border-[#c7ba99] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f58723]"
             required
           />
           <button
             type="submit"
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+            className="bg-[#f58723] text-white px-5 py-2 rounded-lg hover:bg-[#d46f1a] transition"
           >
             Cadastrar
           </button>
         </form>
 
-        {/* Lista de empresas */}
         <div className="space-y-4">
           {empresas.map((empresa) => (
             <div
               key={empresa.id}
-              className="bg-gray-100 dark:bg-gray-800 rounded p-4 flex justify-between items-center"
+              className="bg-[#f1ecdf] dark:bg-[#1a1a1a] border border-[#d4c9ad] rounded-xl p-4 flex justify-between items-center shadow-sm hover:shadow-md transition"
             >
-              <span className="text-gray-800 dark:text-white font-medium">
+              <span className="text-[#000000] dark:text-[#f1ecdf] font-medium text-lg">
                 {empresa.nome}
               </span>
               <button
                 onClick={() => acessarEmpresa(empresa.id)}
-                className="text-blue-600 hover:underline"
+                className="text-[#f58723] hover:underline font-medium"
               >
                 Acessar
               </button>

@@ -95,13 +95,13 @@ export default function ImportarTransacoes({
 
           <button
             onClick={salvar}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            className="bg-[#f58723] hover:bg-[#f58723] text-white px-4 py-2 rounded"
           >
             Salvar transações válidas
           </button>
 
           {sucesso && (
-            <div className="mt-4 text-green-700 font-semibold">
+            <div className="mt-4 text-white font-semibold">
               ✅ Transações importadas com sucesso!
             </div>
           )}

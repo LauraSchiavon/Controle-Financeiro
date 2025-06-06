@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const [filtros, setFiltros] = useState<any>({});
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [mensagem, setMensagem] = useState<string | null>(null); // NOVO: mensagem de sucesso
+  const [mensagem, setMensagem] = useState<string | null>(null);
 
   const fetchTransacoes = async () => {
     try {
@@ -78,34 +78,26 @@ export default function DashboardPage() {
   return (
     <Grid>
       <div className="mt-10">
-        <h1 className="text-2xl font-bold mb-6 text-gray-900">
+        <h1 className="text-3xl font-bold mb-6 text-[#000] dark:text-[#f1ecdf]">
           Minhas Transações
         </h1>
-
-        {/* MENSAGEM DE SUCESSO */}
-        {mensagem && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
-            {mensagem}
-          </div>
-        )}
 
         <div className="flex flex-wrap gap-4 mb-6">
           <button
             onClick={() => setMostrarFormulario(!mostrarFormulario)}
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+            className="bg-[#f58723] text-white px-4 py-2 rounded-xl shadow hover:brightness-90 transition"
           >
             {mostrarFormulario ? "Fechar formulário" : "Nova transação"}
           </button>
 
           <button
             onClick={() => setMostrarFiltros(!mostrarFiltros)}
-            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+            className="bg-[#c7ba99] text-black px-4 py-2 rounded-xl shadow hover:brightness-95 transition"
           >
             {mostrarFiltros ? "Fechar filtros" : "Filtrar transações"}
           </button>
         </div>
 
-        {/* IMPORTAÇÃO DE PLANILHA SEMPRE VISÍVEL */}
         <ImportarTransacoes
           onImportado={() => {
             fetchTransacoes();
@@ -114,7 +106,11 @@ export default function DashboardPage() {
           }}
           empresaId={Number(id)}
         />
-
+        {mensagem && (
+          <div className="bg-[#f58723] border border-[#f58723] text-white px-4 py-2 rounded mb-4 shadow-md">
+            {mensagem}
+          </div>
+        )}
         {mostrarFormulario && (
           <TransacaoForm onSuccess={fetchTransacoes} empresaId={Number(id)} />
         )}
@@ -128,31 +124,29 @@ export default function DashboardPage() {
           />
         )}
 
-        {/* RESUMO */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-green-100 text-green-800 p-4 rounded shadow">
+          <div className="bg-[#d4c9ad] text-black p-4 rounded-xl shadow">
             <h3 className="text-sm font-semibold">Total de Entradas</h3>
-            <p className="text-xl font-bold">
+            <p className="text-2xl font-bold">
               R$ {totalEntradas.toFixed(2).replace(".", ",")}
             </p>
           </div>
 
-          <div className="bg-red-100 text-red-800 p-4 rounded shadow">
+          <div className="bg-[#f1ecdf] text-black p-4 rounded-xl shadow">
             <h3 className="text-sm font-semibold">Total de Saídas</h3>
-            <p className="text-xl font-bold">
+            <p className="text-2xl font-bold">
               R$ {totalSaidas.toFixed(2).replace(".", ",")}
             </p>
           </div>
 
-          <div className="bg-gray-100 text-gray-800 p-4 rounded shadow">
+          <div className="bg-[#c7ba99] text-black p-4 rounded-xl shadow">
             <h3 className="text-sm font-semibold">Saldo Final</h3>
-            <p className="text-xl font-bold">
+            <p className="text-2xl font-bold">
               R$ {saldo.toFixed(2).replace(".", ",")}
             </p>
           </div>
         </div>
 
-        {/* TABELA DE TRANSAÇÕES */}
         <TransacoesTable
           transacoes={transacoesFiltradas}
           onDelete={handleDelete}

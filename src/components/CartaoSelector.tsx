@@ -26,12 +26,14 @@ export default function CartaoSelector({
   }, [empresaId]);
 
   return (
-    <div>
-      <label className="block text-white mb-1">Cartão (opcional)</label>
+    <div className="space-y-1">
+      <label className="text-white text-sm font-medium">
+        Cartão (opcional)
+      </label>
       <select
         value={selected}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+        className="w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723] transition"
       >
         <option value="">Nenhum</option>
         {cartoes.map((c) => (

@@ -1,17 +1,24 @@
 @import "tailwindcss";
 
+/* 🎨 Paleta de Cores */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cor-fundo: #000000;
+  --cor-texto: #f1ecdf;
+  --cor-destaque: #f58723;
+  --cor-bege-claro: #f1ecdf;
+  --cor-bege-medio: #d4c9ad;
+  --cor-bege-escuro: #c7ba99;
+
+  /* Cores de fundo/tema */
+  --background: var(--cor-fundo);
+  --foreground: var(--cor-texto);
+
+  /* Fontes */
+  --font-sans: "Poppins", sans-serif;
+  --font-mono: "Courier New", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* 🌙 Modo escuro (opcional) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +26,9 @@
   }
 }
 
+/* 🎯 Estilo base */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }

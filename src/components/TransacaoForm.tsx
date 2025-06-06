@@ -101,16 +101,16 @@ export default function TransacaoForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full space-y-4 bg-gradient-to-br from-[#0f0f0f] to-[#1f1f1f] p-6 rounded-2xl shadow-xl border border-gray-700 mb-6"
+      className="w-full space-y-4 bg-gradient-to-br from-[#0d0d0d] to-[#1c1c1c] p-6 rounded-2xl shadow-2xl border border-white/10 backdrop-blur"
     >
-      <h2 className="text-2xl font-bold text-white mb-4">Nova Transação</h2>
+      <h2 className="text-2xl font-semibold text-white">Nova Transação</h2>
 
       <input
         placeholder="Título"
         value={titulo}
         onChange={(e) => setTitulo(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full bg-white/5 text-white placeholder-gray-400 px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
       />
 
       <input
@@ -119,7 +119,7 @@ export default function TransacaoForm({
         value={valor}
         onChange={(e) => setValor(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full bg-white/5 text-white placeholder-gray-400 px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -127,7 +127,7 @@ export default function TransacaoForm({
           value={tipo}
           onChange={(e) => setTipo(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+          className="w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
         >
           <option value="entrada">Entrada</option>
           <option value="saida">Saída</option>
@@ -138,7 +138,7 @@ export default function TransacaoForm({
           value={data}
           onChange={(e) => setData(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+          className="w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
         />
       </div>
 
@@ -147,14 +147,14 @@ export default function TransacaoForm({
         value={fornecedor}
         onChange={(e) => setFornecedor(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600 placeholder-gray-400"
+        className="w-full bg-white/5 text-white placeholder-gray-400 px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
       />
 
       <select
         value={categoriaId}
         onChange={(e) => setCategoriaId(e.target.value)}
         disabled={!tipo}
-        className={`w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600 transition-opacity ${
+        className={`w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723] transition-opacity ${
           !tipo ? "opacity-50" : "opacity-100"
         }`}
       >
@@ -170,12 +170,12 @@ export default function TransacaoForm({
         value={nichoId}
         onChange={(e) => setNichoId(e.target.value)}
         disabled={!categoriaId}
-        className={`w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600 transition-opacity ${
+        className={`w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723] transition-opacity ${
           !categoriaId ? "opacity-50" : "opacity-100"
         }`}
       >
         <option value="">Subcategoria</option>
-        {nichos.map((n: Nicho) => (
+        {nichos.map((n) => (
           <option key={n.id} value={n.id}>
             {n.nome}
           </option>
@@ -186,7 +186,7 @@ export default function TransacaoForm({
         value={formaPagamento}
         onChange={(e) => setFormaPagamento(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+        className="w-full bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#f58723]"
       >
         <option value="">Forma de Pagamento</option>
         <option value="pix">Pix</option>
@@ -203,7 +203,7 @@ export default function TransacaoForm({
 
       <button
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition"
+        className="w-full bg-[#f58723] hover:bg-[#f58723] text-white font-medium py-3 rounded-xl transition-all duration-200"
       >
         Salvar Transação
       </button>

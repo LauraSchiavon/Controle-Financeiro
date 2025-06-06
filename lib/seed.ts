@@ -2,9 +2,6 @@ import { openDb } from "./db";
 
 async function seed() {
   const db = await openDb();
-  await db.exec(`DROP TABLE IF EXISTS categorias`);
-  await db.exec(`DROP TABLE IF EXISTS nichos`);
-  await db.exec(`DROP TABLE IF EXISTS transacoes`);
 
   // 👤 Usuários
   await db.exec(`
@@ -39,27 +36,29 @@ async function seed() {
       FOREIGN KEY (empresa_id) REFERENCES empresas(id)
     );
   `);
-  await db.exec(`
-  CREATE TABLE IF NOT EXISTS transacoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    titulo TEXT NOT NULL,
-    valor REAL NOT NULL,
-    tipo TEXT CHECK(tipo IN ('entrada', 'saida')),
-    data TEXT NOT NULL,
-    fornecedor TEXT, 
-    categoria_id INTEGER, 
-    nicho_id INTEGER,
-    forma_pagamento TEXT,
-    cartao_id INTEGER,
-    empresa_id INTEGER NOT NULL,
-    FOREIGN KEY (categoria_id) REFERENCES categorias(id),
-    FOREIGN KEY (nicho_id) REFERENCES nichos(id),
-    FOREIGN KEY (cartao_id) REFERENCES cartoes(id),
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id)
-  );
-`);
 
-  // 🎯 Metas (ligadas à empresa)
+  // 💸 Transações (ligadas à empresa)
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS transacoes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      titulo TEXT NOT NULL,
+      valor REAL NOT NULL,
+      tipo TEXT CHECK(tipo IN ('entrada', 'saida')),
+      data TEXT NOT NULL,
+      fornecedor TEXT, 
+      categoria_id INTEGER, 
+      nicho_id INTEGER,
+      forma_pagamento TEXT,
+      cartao_id INTEGER,
+      empresa_id INTEGER NOT NULL,
+      FOREIGN KEY (categoria_id) REFERENCES categorias(id),
+      FOREIGN KEY (nicho_id) REFERENCES nichos(id),
+      FOREIGN KEY (cartao_id) REFERENCES cartoes(id),
+      FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+    );
+  `);
+
+  // 🎯 Metas
   await db.exec(`
     CREATE TABLE IF NOT EXISTS metas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,7 +92,7 @@ async function seed() {
     );
   `);
 
-  console.log("✅ Banco recriado com todas as tabelas atualizadas!");
+  console.log("✅ Banco inicializado com todas as tabelas — sem apagar dados!");
 }
 
 seed();
